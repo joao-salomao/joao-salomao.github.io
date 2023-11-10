@@ -1,0 +1,16 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+
+/* Code syntax highlighting, powered by https://highlightjs.org */
+@import 'highlight.js/styles/a11y-light.css';
+
+@import 'base';
+@import 'mailchimp';
+@import 'blog';
+
+@import 'tailwindcss/utilities';
+
+
+/*<link href="/your-path-to-fontawesome/css/fontawesome.css" rel="stylesheet">*/
+/*<link href="/your-path-to-fontawesome/css/brands.css" rel="stylesheet">*/
+/*<link href="/your-path-to-fontawesome/css/solid.css" rel="stylesheet">*/
