@@ -1,0 +1,28 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+
+@import "minima";
+
+.social-media-list {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  gap: 10px;
+}
+
+#presentation {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  margin-bottom: 1rem;
+
+  img {
+    border-radius: 9999px;
+    margin-right: 1rem;
+  }
+
+  div {
+    text-align: justify;
+  }
+}
