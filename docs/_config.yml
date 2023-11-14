@@ -19,10 +19,8 @@
 # in the templates via {{ site.myvariable }}.
 title: "João Salomão"
 description: >-
-  I’m a Brazilian software engineer who has been working in software development since 2018. Here, you will find
-  some of my thoughts about software development, programming languages, software engineering, and other topics related to
-  technology and computer science in general — or even unrelated at all. Most of the content is written in English,
-  but you may find some posts in Portuguese as well. Enjoy!
+  I’m a brazilian guy who likes to play guitar, write code, play online games and a lot more. Here, you will find
+  some of my thoughts and content about software development, music, books, games and other things that I like. I hope you enjoy it!
 domain: "joaosalomao.me"
 url: "https://joaosalomao.me"
 
@@ -35,6 +33,12 @@ show_excerpts: false
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-sitemap
+
+header_pages:
+  - projects.md
+  - talks.md
+  - music.md
 
 minima:
   social_links:
@@ -65,7 +69,7 @@ minima:
 # their entries' file path in the `include:` list.
 #
 exclude:
- - new
+  - new
 #   - .jekyll-cache/
 #   - gemfiles/
 #   - Gemfile
