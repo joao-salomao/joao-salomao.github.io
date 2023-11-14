@@ -14,7 +14,7 @@ I recorded this video in one of the rooms at [Coblue](https://coblue.com.br), a 
 ago. I was invited from two friends, Dirlei and Almir, who also worked there to record some videos
 of me playing my guitar... and I did it.
 
-I meet [Marcelo Jeneci](https://marcelojeneci.online) around 2012 and since then I admire and every single music that he
+I met [Marcelo Jeneci](https://marcelojeneci.online) around 2012 and since then I admire and every single music that he
 created. I hope you enjoy it as much as I do.
 
 <iframe height="400" width="710" src="https://www.youtube.com/embed/a0CAA3QGT3Q" title="Felicidade" frameborder="0"
