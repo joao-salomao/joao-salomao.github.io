@@ -1,22 +1,46 @@
 ---
-title: Deploy Laravel application to EC2 with GitHub Actions
+title: Deploy Laravel application to AWS EC2 with GitHub Actions
 layout: post
 category:
 - deploy
 - laravel
 ---
 
-Depending on the size and requirements of the application, we have several options to deploy a Laravel application to a production environment; you may choose [AWS Elastic Beanstalk (ELB)](https://aws.amazon.com/elasticbeanstalk/), [Amazon Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/), [Amazon EC2](https://aws.amazon.com/ec2/), [AWS Lightsail](https://aws.amazon.com/lightsail/), etc... The list of options is very extensive. This post is focused on deploying a small app to a single EC2 instance that bundles all pieces necessary to run a Laravel application such as webserver and database which in our case will be [Nginx](https://www.nginx.com/) and [Postgres](https://www.postgresql.org/) respectively.
+In the past years, I deployed couple of Laravel apps to production using AWS and Github, and from time to time I find my self looking into other projects to remember which steps I took to setup the server, GitHub, the database, etc. Well, it can be a very repetitive task so I decided to document the steps on this post and share the world.
+
+Depending on the size and requirements of the application, you have several options to deploy a Laravel application to a production environment; you may choose [AWS Elastic Beanstalk (ELB)](https://aws.amazon.com/elasticbeanstalk/), [Amazon Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/), [Amazon EC2](https://aws.amazon.com/ec2/), [AWS Lightsail](https://aws.amazon.com/lightsail/), etc... The list of options can be very extensive. This tutorial is focused on deploying a small app to a single EC2 instance that bundles all the necessary pieces to run a Laravel application such as webserver and database which in this case will be [Nginx](https://www.nginx.com/) and [Postgres](https://www.postgresql.org/) respectively.
+
+Even though I used AWS as a cloud provider, these steps can be easily reproduced on any other provider like DigitalOcean, GCP, Azure, or Linode.
 
 ### Prerequisites
-Before diving into deployment, ensure you have the following:
+Before diving into the deployment, ensure you have the following:
 
 * **GitHub Repository:** Your Laravel application hosted on GitHub.
 * **AWS Account**:  Your account with permission to manager EC2.
 
 ### Create the EC2 Instance
+The first thing we need to do is to log in into the AWS console and navigate to the EC2 dashboard:
+![AWS console]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/1.png' | relative_url }})
 
-Update the server dependencies
+Now, click on the launch instance button:
+![Launch button]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/2.png' | relative_url }})
+
+Define the name of your instance and choose an operational system. On this tutorial we are going to use Ubuntu 22.04 LTS.
+![Define instance]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/3.png' | relative_url }})
+
+Create a new key pair to the instance that will be used latter on to connect to the instance:
+![Key pair button]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/4.png' | relative_url }})
+
+It's very important to save this file to a secury place. If you lose it, you are not going to be able to download it again.
+![Key pair form]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/5.png' | relative_url }})
+
+Now, let's define the network settings. We are to create a new security group that will allow traffic for SSH, HTTP, and HTTPS from anywhere
+![Network settings]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/6.png' | relative_url }})
+
+Click on the launch button. You should see a success message and will be able to connect to the instance
+![Network settings]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/7.png' | relative_url }})
+
+Now, connnect to the server and update the system dependencies by running the following command:
 ```bash
 sudo apt update
 sudo apt upgrade
@@ -96,7 +120,7 @@ ALTER USER postgres with encrypted password 'laravel';
 ```
 
 ### Setup application
-Now we need to zip the application and send it to the server. We can do this using scp, which is a tool that allows you to securely transfer files to your server.
+Now we need to zip the application on your local PC and send it to the server. We can do this using scp, which is a tool that allows you to securely transfer files to the server.
 
 Let's first zip the application:
 ```bash
@@ -106,7 +130,7 @@ zip -r app.zip PATH_TO_YOUR_APP
 Now we can send it to the server. We are going to need the SSH private key that we got when we created our EC2 instance to do this. To be able to use the key we first need to give it the proper permission otherwise we are going to get a "bad permissions" error.
 This command will read only permission to your key:
 ```bash
-chmod 400
+chmod 400 PATH_TO_YOUR_KEY
 ```
 
 Now we can send the zip file:
@@ -141,7 +165,7 @@ Update the .env file with the production settings and database credentials. Your
 ```
 APP_NAME="YOUR APP NAME"
 APP_ENV=production
-APP_KEY=base64:f0S51dMTkKv0kYBP8RBHGBjmwsq3rA/8/1EvBeqAqHY=
+APP_KEY=YOUR_APP_KEY
 APP_DEBUG=false
 APP_URL=http://YOUR_EC2_PUBLIC_IP
 
@@ -198,7 +222,7 @@ server {
 }
 ```
 
-Configure the [PHP FPM](https://www.php.net/manual/en/install.fpm.php) pool to your app with the following content:
+Configure the [PHP FPM](https://www.php.net/manual/en/install.fpm.php) pool for your app with the following content:
 
 ```bash
 nano /etc/php/8.2/fpm/pool.d/YOUR_APP_NAME.conf
@@ -220,9 +244,10 @@ pm.max_spare_servers = 20
 pm.process_idle_timeout = 10s
 ```
 
-If you access your server on the browser again you should be able to see your initial page. On my app I've used [Laravel Breeze](https://laravel.com/docs/10.x/starter-kits) starter kit to create the application so I have some basics features like sign up, sign in and profile update:
+If you access your server on the browser again you should be able to see your initial page. On my app I've used [Laravel Breeze](https://laravel.com/docs/10.x/starter-kits) starter kit to create the application so I have some basics features like sign up, sign in and profile update to test.
 ### Setup GitHub Action
 Now that everything is settled on the server,  we can create a [GitHub Action](https://docs.github.com/actions) to deploy the application everytime the main branch is updated.
+
 The first thing we need to do is setup the secrets on the GitHub repository. Go to **Settings** and then on the **Secrets and Actions** section, click on **Actions**
 ![GitHub settings for secrets]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/13.png' | relative_url }})
 
@@ -240,7 +265,7 @@ PRODUCTION_SERVER_SSH_KEY: the content of the private key that got when you crea
 Now, create a file called **deploy.yml** on the **.github/workflows** folder with the following content:
 [action content]({{ 'assets/deploy.yml' | relative_url }})
 
-This action will do the following steps:
+This action will do the following:
 * Checkout to the branch main
 * Install PHP
 * Install the Composer dependencies
@@ -248,12 +273,11 @@ This action will do the following steps:
 * Install Node dependencies
 * Build the front-end assets
 * Upload the files to the server and place it in the temporary folder
-* Setup the new version on the server remove the old version and migrating the database
+* Setup the new version on the server remove the old version and migrate the database
 
+That's it, are done! 
 ### Final considerations
-On this tutorial I've used a very simplied configuration for Nginx, PHP FPM and Postgres, you can finetune those settings by diving into the documentation of each software.
-In addtion, you can improve the deploy action by adding a step to run the automated tests of your applications to make sure you are not deploying a broken version.
+On this tutorial I've used a very simplied configuration for Nginx, PHP FPM and Postgres, you can finetune those configurations by diving into the documentation of each software.
+In addtion, you can improve the deploy action by adding a step to run the automated tests of your application to make sure you are not deploying a broken version.
 
-Even though I used AWS as a cloud provider, these steps can be easily reproduced on any other provider like DigitalOcean, GCP, Azure, or Linode.
-
-Good luck on your journey throght the cloud world!
+Good luck on your journey throght the cloud world! 🎉🎉🎉
