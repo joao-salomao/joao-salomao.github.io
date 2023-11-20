@@ -3,9 +3,9 @@ title: Deploy Laravel application to AWS EC2 with GitHub Actions
 layout: post
 ---
 
-In the past years, I deployed couple of Laravel apps to production using AWS and Github, and from time to time I find my self looking into other projects to remember which steps I took to setup the server, GitHub, the database, etc. Well, it can be a very repetitive task so I decided to document the steps on this post and share the world.
+In the past years, I deployed a couple of Laravel apps to production using AWS and Github, and from time to time I find myself looking into other projects to remember which steps I took to set up the server, GitHub, the database, etc. Well, it can be a very repetitive task so I decided to document the steps in this post and share the world.
 
-Depending on the size and requirements of the application, you have several options to deploy a Laravel application to a production environment; you may choose [AWS Elastic Beanstalk (ELB)](https://aws.amazon.com/elasticbeanstalk/), [Amazon Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/), [Amazon EC2](https://aws.amazon.com/ec2/), [AWS Lightsail](https://aws.amazon.com/lightsail/), etc... The list of options can be very extensive. This tutorial is focused on deploying a small app to a single EC2 instance that bundles all the necessary pieces to run a Laravel application such as webserver and database which in this case will be [Nginx](https://www.nginx.com/) and [Postgres](https://www.postgresql.org/) respectively.
+Depending on the size and requirements of the application, you have several options to deploy a Laravel application to a production environment; you may choose [AWS Elastic Beanstalk (ELB)](https://aws.amazon.com/elasticbeanstalk/), [Amazon Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/), [Amazon EC2](https://aws.amazon.com/ec2/), [AWS Lightsail](https://aws.amazon.com/lightsail/), etc... The list of options can be very extensive. This tutorial is focused on deploying a small app to a single EC2 instance that bundles all the necessary pieces to run a Laravel application such as a web server and database which in this case will be [Nginx](https://www.nginx.com/) and [Postgres](https://www.postgresql.org/) respectively.
 
 Even though I used AWS as a cloud provider, these steps can be easily reproduced on any other provider like DigitalOcean, GCP, Azure, or Linode.
 
@@ -25,10 +25,10 @@ Now, click on the launch instance button:
 Define the name of your instance and choose an operational system. On this tutorial we are going to use Ubuntu 22.04 LTS.
 ![Define instance]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/3.png' | relative_url }})
 
-Create a new key pair to the instance that will be used latter on to connect to the instance:
+Create a new key pair to the instance that will be used later on to connect to the instance:
 ![Key pair button]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/4.png' | relative_url }})
 
-It's very important to save this file to a secury place. If you lose it, you are not going to be able to download it again.
+It's very important to save this file to a secure place. If you lose it, you are not going to be able to download it again.
 ![Key pair form]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/5.png' | relative_url }})
 
 Now, let's define the network settings. We are to create a new security group that will allow traffic for SSH, HTTP, and HTTPS from anywhere
@@ -37,13 +37,13 @@ Now, let's define the network settings. We are to create a new security group th
 Click on the launch button. You should see a success message and will be able to connect to the instance
 ![Network settings]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/7.png' | relative_url }})
 
-Now, connnect to the server and update the system dependencies by running the following command:
+Now, connect to the server and update the system dependencies by running the following command:
 ```bash
 sudo apt update
 sudo apt upgrade
 ```
 ### Install PHP
-Run the following command to install PHP with Laravel required extensions:
+Run the following command to install PHP with Laravel-required extensions:
 ```bash
 sudo apt install -y software-properties-common
 sudo add-apt-repository ppa:ondrej/php
@@ -51,7 +51,7 @@ sudo apt update
 sudo apt install -y  php8.2 php8.2-mbstring php8.2-bcmath php8.2-xml php8.2-zip php8.2-curl php8.2-fpm php8.2-pgsql
 ```
 
-Test if the installation sucessed by checking the PHP version:
+Test if the installation succeeded by checking the PHP version:
 ```bash
 php -v
 ```
@@ -68,7 +68,7 @@ php -r "unlink('composer-setup.php');"
 sudo mv composer.phar /usr/local/bin/composer
 ```
 
-Test if the installation sucessed by checking the Composer version:
+Test if the installation succeeded by checking the Composer version:
 ```bash
 composer -v
 ```
@@ -77,7 +77,7 @@ You should see the following output:
 ![Composer version output]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/9.png' | relative_url }})
 
 ### Install Nginx
-By default the Ubuntu server comes with the Apache web server, so we first need to remove it in order to install Nginx.
+By default the Ubuntu server comes with the Apache web server, so we first need to remove it to install Nginx.
 ```bash
 sudo apt remove apache2
 ```
@@ -87,11 +87,11 @@ Now install Nginx:
 sudo apt install nginx
 ```
 
-If everything went well, you will be able to access the Nginx default page typing the IP of your server in the browser and see the following screen:
+If everything goes well, you will be able to access the Nginx default page by typing the public IP of your server in the browser and see the following screen:
 ![Nginx welcome page]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/10.png' | relative_url }})
 
 ### Install the Postgres
-This step is considered optional because you can opt to use a managed database like [AWS RDS](https://aws.amazon.com/rds) instead of running on your own server. As a geral rule of thumb, generally we don't install everything in one server but it can okay depending on your workload.  [AWS RDS](https://aws.amazon.com/rds) is included on the AWS free tier package so you can start using it for free.
+This step is considered optional because you can opt to use a managed database like [AWS RDS](https://aws.amazon.com/rds) instead of running on your own server. As a general rule of thumb, generally, we don't install everything in one server but it can okay depending on your workload.  [AWS RDS](https://aws.amazon.com/rds) is included in the AWS free tier package so you can start using it for free.
 
 Install the database server:
 ```bash
@@ -124,8 +124,8 @@ Let's first zip the application:
 zip -r app.zip PATH_TO_YOUR_APP
 ```
 
-Now we can send it to the server. We are going to need the SSH private key that we got when we created our EC2 instance to do this. To be able to use the key we first need to give it the proper permission otherwise we are going to get a "bad permissions" error.
-This command will read only permission to your key:
+Now we can send it to the server. We are going to need the SSH private key that we got when we created our EC2 instance to do this. To be able to use the key we first need to give it the proper permission otherwise, we are going to get a "bad permissions" error.
+This command will read-only permission to your key:
 ```bash
 chmod 400 PATH_TO_YOUR_KEY
 ```
@@ -135,7 +135,7 @@ Now we can send the zip file:
 scp -i PATH_TO_YOUR_KEY app.zip ubuntu@YOUR_EC2_PUBLIC_IP:~/
 ```
 
-Let's connect to the server using SSH to setup the application:
+Let's connect to the server using SSH to set up the application:
 ```bash
 ssh -i PATH_TO_YOUR_KEY ubuntu@YOUR_EC2_PUBLIC_IP
 ```
@@ -151,7 +151,7 @@ Move it to the web sites folder:
 sudo mv app /var/www/app
 ```
 
-Change the ownership of the app folder to the Ubuntu default webserver user and update the storage and bootstrap folders permissions
+Change the ownership of the app folder to the Ubuntu default webserver user and update the storage and bootstrap folder permissions
 ```bash
 sudo chown -R $USER:www-data app
 sudo chmod -R 775 app/storage
@@ -241,11 +241,11 @@ pm.max_spare_servers = 20
 pm.process_idle_timeout = 10s
 ```
 
-If you access your server on the browser again you should be able to see your initial page. On my app I've used [Laravel Breeze](https://laravel.com/docs/10.x/starter-kits) starter kit to create the application so I have some basics features like sign up, sign in and profile update to test.
+If you access your server on the browser again you should be able to see your initial page. On my app I've used [Laravel Breeze](https://laravel.com/docs/10.x/starter-kits) starter kit to create the application so I have some basic features like sign up, sign in, and profile update to test.
 ### Setup GitHub Action
-Now that everything is settled on the server,  we can create a [GitHub Action](https://docs.github.com/actions) to deploy the application everytime the main branch is updated.
+Now that everything is settled on the server,  we can create a [GitHub Action](https://docs.github.com/actions) to deploy the application every time the main branch is updated.
 
-The first thing we need to do is setup the secrets on the GitHub repository. Go to **Settings** and then on the **Secrets and Actions** section, click on **Actions**
+The first thing we need to do is set up the secrets on the GitHub repository. Go to **Settings** and then on the **Secrets and Actions** section, click on **Actions**
 ![GitHub settings for secrets]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/13.png' | relative_url }})
 
 We are going to create three secrets: 
@@ -263,7 +263,7 @@ Now, create a file called **deploy.yml** on the **.github/workflows** folder wit
 [action content]({{ 'assets/deploy.yml' | relative_url }})
 
 This action will do the following:
-* Checkout to the branch main
+* Checkout to the main branch
 * Install PHP
 * Install the Composer dependencies
 * Install Node.js
@@ -274,7 +274,7 @@ This action will do the following:
 
 That's it, are done! 
 ### Final considerations
-On this tutorial I've used a very simplied configuration for Nginx, PHP FPM and Postgres, you can finetune those configurations by diving into the documentation of each software.
-In addtion, you can improve the deploy action by adding a step to run the automated tests of your application to make sure you are not deploying a broken version.
+In this tutorial I've used a very simplified configuration for Nginx, PHP FPM, and Postgres, you can finetune those configurations by diving into the documentation of each software.
+In addition, you can improve the deploy action by adding a step to run the automated tests of your application to make sure you are not deploying a broken version.
 
-Good luck on your journey throght the cloud world! 🎉🎉🎉
+Good luck on your journey through the cloud world! 🎉🎉🎉
