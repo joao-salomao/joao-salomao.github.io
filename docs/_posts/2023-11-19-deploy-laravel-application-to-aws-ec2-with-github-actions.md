@@ -1,9 +1,6 @@
 ---
 title: Deploy Laravel application to AWS EC2 with GitHub Actions
 layout: post
-category:
-- deploy
-- laravel
 ---
 
 In the past years, I deployed couple of Laravel apps to production using AWS and Github, and from time to time I find my self looking into other projects to remember which steps I took to setup the server, GitHub, the database, etc. Well, it can be a very repetitive task so I decided to document the steps on this post and share the world.

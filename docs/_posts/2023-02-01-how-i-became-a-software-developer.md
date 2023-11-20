@@ -1,7 +1,6 @@
 ---
 layout: post
 title: 'How I Became a Software Engineer'
-categories: [ career ]
 ---
 
 ![The road](/assets/images/road.png)
