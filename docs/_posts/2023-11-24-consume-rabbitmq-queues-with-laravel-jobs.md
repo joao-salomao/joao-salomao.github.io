@@ -1,6 +1,9 @@
 ---
-title: Consume RabbitMQ queues on Laravel jobs
+title: Consume RabbitMQ queues with Laravel jobs
+layout: post
 ---
+
+![RabbitMQ + Laravel]({{ 'assets/images/posts/consume-rabbitmq-queues-with-laravel-jobs/header.png' | relative_url }})
 
 [RabbitMQ](https://www.rabbitmq.com), a powerful message broker, is widely used for building scalable and distributed applications. 
 In this guide, we’ll explore the steps to consume [RabbitMQ queues](https://www.rabbitmq.com/queues.html) effectively within [Laravel jobs](https://laravel.com/docs/10.x/queues).
@@ -131,13 +134,13 @@ class ProcessRabbitMQMessage extends Job
 }
 ```
 
-Since we want to continuosly consume the queue, let's update the scheduler to dispatch the job hourly. 
+Since we want to continuously consume the queue, let's update the scheduler to dispatch the job hourly. 
 Add the following line to the method `schedule` on the file  `App\Console\Kernel`:
 ```php
 $schedule->job(new ProcessRabbitMQMessage)->hourly();
 ```
 
-### Create a basic messages sender to test your consumer locally
+### Create a basic message sender to test your consumer locally
 Generate a new job using the Laravel Artisan CLI:
 ```bash
 php artisan make:job RabbitMQMessageSender
@@ -202,7 +205,7 @@ php artisan tinker
 ProcessRabbitMQMessage::dispatchSync()
 ```
 
-If everything went well, you should see the success exit code on your console.
+If everything goes well, you should see the success exit code on your console.
 
 ### Retries and Error Handling
 Implement retry mechanisms and error handling within your job logic. If a job fails due to a timeout, have mechanisms to retry or log the failure for further investigation.

@@ -3,6 +3,8 @@ title: Deploy Laravel application to AWS EC2 with GitHub Actions
 layout: post
 ---
 
+![Laravel + AWS EC2 + GitHub Actions]({{ 'assets/images/posts/deploy-laravel-application-to-a-single-server-with-ci-cd/header.png' | relative_url }})
+
 In the past years, I deployed a couple of Laravel apps to production using AWS and Github, and from time to time I find myself looking into other projects to remember which steps I took to set up the server, GitHub, the database, etc. Well, it can be a very repetitive task so I decided to document the steps in this post and share it with the world.
 
 Depending on the size and requirements of the application, you have several options to deploy a Laravel application to a production environment; you may choose [AWS Elastic Beanstalk (ELB)](https://aws.amazon.com/elasticbeanstalk/), [Amazon Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/), [Amazon EC2](https://aws.amazon.com/ec2/), [AWS Lightsail](https://aws.amazon.com/lightsail/), etc... The list of options can be very extensive. This tutorial is focused on deploying a small app to a single EC2 instance that bundles all the necessary pieces to run a Laravel application such as a web server and database which in this case will be [Nginx](https://www.nginx.com/) and [Postgres](https://www.postgresql.org/) respectively.
