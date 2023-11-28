@@ -47,7 +47,7 @@ RABBITMQ_PASSWORD=your_password
 
 ```
 
-### Creating a Laravel Job for RabbitMQ Queue Consumption
+### Creating the consumer
 Generate a new job using the [Laravel Artisan CLI](https://laravel.com/docs/10.x/artisan):
 ```bash
 php artisan make:job ProcessRabbitMQMessage
@@ -140,13 +140,13 @@ Add the following line to the method `schedule` on the file  `App\Console\Kernel
 $schedule->job(new ProcessRabbitMQMessage)->hourly();
 ```
 
-### Create a basic message sender to test your consumer locally
+### Creating a basic producer
 Generate a new job using the Laravel Artisan CLI:
 ```bash
-php artisan make:job RabbitMQMessageSender
+php artisan make:job RabbitMQMessageProducer
 ```
 
-Open the generated `RabbitMQMessageSender` job file (`app/Jobs/RabbitMQMessageSender.php`). This job will handle the logic to send messages to RabbitMQ queue:
+Open the generated `RabbitMQMessageProducer` job file (`app/Jobs/RabbitMQMessageProducer.php`). This job will handle the logic to send messages to RabbitMQ queue:
 ```php
 <?php
 
@@ -155,7 +155,7 @@ namespace App\Jobs;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-class RabbitMQMessageSender extends Job
+class RabbitMQMessageProducer extends Job
 {
     public function handle(): void
     {
@@ -189,14 +189,14 @@ class RabbitMQMessageSender extends Job
     }
 }
 ```
-### Run jobs
-Now that we are both consumer and sender ready, we can run the jobs to see if everything is working as expected. Let's first dispatch the job `RabbitMQMessageSender` a couple of times so we have some messages to process; we are going to use[ Laravel Tinker](https://laravel.com/docs/10.x/artisan#tinker) to dispatch the job:
+### Running the jobs
+Now that we are both consumer and producer, we can run the jobs to see if everything is working as expected. Let's first dispatch the job `RabbitMQMessageProducer` a couple of times so we have some messages to process; we are going to use [Laravel Tinker](https://laravel.com/docs/10.x/artisan#tinker) to dispatch the job:
 ```php
 php artisan tinker
-RabbitMQMessageSender::dispatchSync();
-RabbitMQMessageSender::dispatchSync();
-RabbitMQMessageSender::dispatchSync();
-RabbitMQMessageSender::dispatchSync();
+RabbitMQMessageProducer::dispatchSync();
+RabbitMQMessageProducer::dispatchSync();
+RabbitMQMessageProducer::dispatchSync();
+RabbitMQMessageProducer::dispatchSync();
 ```
 
 Now that we dispatched the job four times, let's run the consumer and check if the messages were successfully processed:

@@ -11,7 +11,7 @@ decided this, it took time and a lot of effort.
 The truth is that I had a lot of influence. I used to spend a lot of time in a friend’s house playing video games like
 Dota 2, Counter-Strike, Grand Fantasia, and Ragnarok… His father worked fixing computers, so his house was always filled
 with hardware everywhere. This was the scene where I got used to living daily with computers. I know what you are
-thinking, but no, his father didn’t teach us how to program, but I had the opportunity to see some interesting computer
+thinking, but no, his father didn’t teach us how to code, but I had the opportunity to see some interesting computer
 problems being solved there, like creating a shared folder to share files with the TV or the PlayStation 2. I just
 really learned how those things work when I was in college in the Systems Network classes.
 
