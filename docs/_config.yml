@@ -42,9 +42,6 @@ header_pages:
 
 minima:
   social_links:
-    - platform: instagram
-      user_url: "https://www.instagram.com/joao_salomaoo"
-
     - platform: github
       user_url: "https://github.com/joao-salomao"
 
