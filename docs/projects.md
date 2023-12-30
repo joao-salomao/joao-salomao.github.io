@@ -1,7 +1,7 @@
 ---
-layout: page
 title: Projects
-permalink: /projects
+layout: page
+permalink: "/projects"
 ---
 
 As you may have noticed, I'm a software developer and I really like create new things, even more if it's something that
@@ -15,7 +15,7 @@ a tool that helps you to write a feedback using a set of questions that you can 
 to write a feedback. Behind the scenes we use AI to analyze your inputs and make a full text feedback for you.
 [Sign up now and try it out!](https://app.smartfeedback.co/)
 
-### [Economiza SC](https://github.com/jsappsbr/Economiza-SC)
+### [Economiza SC](https://play.google.com/store/apps/details?id=br.com.jsapps.economiza_sc)
 
 Economiza SC is a project that aims to help people to save money by showing them the best prices for products on
 supermarkets near them. Also, it helps the supermarkets to sell more by showing their products to more people through
